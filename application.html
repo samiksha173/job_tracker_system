@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Add Application</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Resume upload box ── */
+    .resume-drop {
+      border: 2px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: #f8fafc;
+      position: relative;
+    }
+
+    .resume-drop:hover,
+    .resume-drop.drag-over {
+      border-color: #3b82f6;
+      background: #eff6ff;
+    }
+
+    .resume-drop input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .resume-drop .upload-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .resume-drop .upload-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #3b82f6;
+      display: block;
+    }
+
+    .resume-drop .upload-hint {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ── Resume preview card ── */
+    #resumePreview {
+      display: none;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      margin-top: 12px;
+    }
+
+    .resume-file-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: #fee2e2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .resume-file-icon.pdf {
+      background: #fee2e2;
+    }
+
+    .resume-file-icon.docx {
+      background: #dbeafe;
+    }
+
+    .resume-file-icon.other {
+      background: #f1f5f9;
+    }
+
+    .resume-file-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e293b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 260px;
+    }
+
+    .resume-file-size {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .resume-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn-preview {
+      padding: 5px 13px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #3b82f6;
+      color: #3b82f6;
+      background: #eff6ff;
+      text-decoration: none;
+    }
+
+    .btn-preview:hover {
+      background: #dbeafe;
+    }
+
+    .btn-remove {
+      padding: 5px 13px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #fca5a5;
+      color: #dc2626;
+      background: #fff;
+    }
+
+    .btn-remove:hover {
+      background: #fee2e2;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">💼 Job Tracker</div>
+    <button class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links">
+      <a href="index.html">Dashboard</a>
+      <a class="active" href="application.html">Applications</a>
+      <a href="calendar.html">Calendar</a>
+      <a href="reminders.html">Reminders</a>
+      <a href="job.html">Find Jobs</a>
+      <a href="tools.html">Tools</a>
+    </div>
+    <button class="btn" onclick="window.location.href='application.html'">+ New Application</button>
+    <div class="nav-avatar pink" id="app-avatar">AB</div>
+    <button class="btn-signout" onclick="logout()">Sign out</button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Dashboard</a>
+    <a class="active" href="application.html">Applications</a>
+    <a href="calendar.html">Calendar</a>
+    <a href="reminders.html">Reminders</a>
+    <a href="job.html">Find Jobs</a>
+    <a href="tools.html">Tools</a>
+    <button class="mob-new-btn" onclick="window.location.href='application.html'">+ New Application</button>
+    <div class="nav-avatar pink" id="mob-avatar">AB</div>
+    <button class="btn-signout" onclick="logout()">Sign out</button>
+  </div>
+
+  <!-- Main -->
+  <div class="container">
+
+    <h1>
+      <span class="back-arrow" onclick="goBack()">←</span>
+      Add New Application
+    </h1>
+    <p class="subtitle">Track a new job or internship application</p>
+
+    <!-- Basic Info -->
+    <div class="box">
+      <h2>Basic Information</h2>
+      <div class="grid">
+
+        <div>
+          <label>Company Name *</label>
+          <input id="companyName" type="text" placeholder="e.g., Google, Microsoft">
+        </div>
+
+        <div>
+          <label>Position *</label>
+          <input id="position" type="text" placeholder="e.g., Software Engineer Intern">
+        </div>
+
+        <div>
+          <label>Status *</label>
+          <select id="status">
+            <option value="">-- Select Status --</option>
+            <option>Applied</option>
+            <option>Interview</option>
+            <option>Offer</option>
+            <option>Rejected</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Job Type *</label>
+          <select id="jobType">
+            <option value="">-- Select Job Type --</option>
+            <option>Internship</option>
+            <option>Full-Time</option>
+            <option>Part-Time</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Location</label>
+          <input id="location" type="text" placeholder="e.g., San Francisco, CA">
+        </div>
+
+        <div>
+          <label>Salary/Stipend</label>
+          <input id="salary" type="text" placeholder="e.g., $5000/month">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Dates -->
+    <div class="box">
+      <h2>Important Dates</h2>
+      <div class="grid">
+
+        <div>
+          <label>Application Date *</label>
+          <input id="appDate" type="date">
+        </div>
+
+        <div>
+          <label>Application Deadline</label>
+          <input id="deadline" type="date">
+        </div>
+
+        <div>
+          <label>Interview Date</label>
+          <input id="interviewDate" type="date">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Resume Upload -->
+    <div class="box">
+      <h2>Resume / CV</h2>
+
+      <div class="resume-drop" id="resumeDrop">
+        <input type="file" id="resumeFile" accept=".pdf,.doc,.docx,.txt">
+        <span class="upload-icon">📄</span>
+        <span class="upload-label">Click to upload or drag &amp; drop</span>
+        <span class="upload-hint">PDF, DOC, DOCX up to 5 MB</span>
+      </div>
+
+      <div id="resumePreview">
+        <div class="resume-file-icon" id="resumeIcon">📄</div>
+        <div style="flex:1;min-width:0;">
+          <div class="resume-file-name" id="resumeName">resume.pdf</div>
+          <div class="resume-file-size" id="resumeSize">0 KB</div>
+        </div>
+        <div class="resume-actions">
+          <a class="btn-preview" id="resumeViewBtn" target="_blank">👁 View</a>
+          <button class="btn-remove" id="resumeRemoveBtn">✕ Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Details -->
+    <div class="box">
+      <h2>Additional Details</h2>
+      <div class="grid-full">
+
+        <div>
+          <label>Job Description</label>
+          <textarea id="jobDescription" placeholder="Brief description of the role and responsibilities..."></textarea>
+        </div>
+
+        <div>
+          <label>Notes</label>
+          <textarea id="notes" placeholder="Any additional notes, preparation status, follow-up actions..."></textarea>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label>Contact Person</label>
+            <input id="contactPerson" type="text" placeholder="e.g., John Doe, HR Manager">
+          </div>
+          <div>
+            <label>Contact Email</label>
+            <input id="contactEmail" type="email" placeholder="e.g., hr@company.com">
+          </div>
+        </div>
+
+        <div>
+          <label>Job Posting URL</label>
+          <input id="jobUrl" type="url" placeholder="https://company.com/careers/job-id">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-actions">
+      <button class="cancel-btn" onclick="window.location.href='index.html'">Cancel</button>
+      <button class="submit-btn" id="addApplicationBtn">Add Application</button>
+    </div>
+
+  </div><!-- /container -->
+
+  <!-- Toast -->
+  <div id="toast" style="
+    display:none;position:fixed;bottom:30px;right:30px;
+    padding:14px 24px;border-radius:10px;font-size:15px;
+    font-weight:600;color:#fff;z-index:9999;
+    box-shadow:0 6px 24px rgba(0,0,0,0.2);transition:opacity 0.3s ease;
+  "></div>
+
+  <!-- ══════════════════════════════════════════════════
+       Firebase module — auth guard + avatar from Firestore + submit
+  ════════════════════════════════════════════════════ -->
+  <script type="module">
+    import {
+      auth,
+      db,
+      onAuthStateChanged,
+      submitApplication,
+      logout as _logout
+    } from "./applications-backend.js";
+
+    import {
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    /* ── Auth guard + avatar ────────────────────────── */
+    onAuthStateChanged(auth, async user => {
+      if (!user) { window.location.href = "login.html"; return; }
+
+      /* Read firstName + lastName from Firestore applicants/{uid} */
+      let initials = "";
+      try {
+        const snap = await getDoc(doc(db, "applicants", user.uid));
+        if (snap.exists()) {
+          const p = snap.data();
+          const firstName = (p.firstName || "").trim();
+          const lastName = (p.lastName || "").trim();
+          if (firstName && lastName) {
+            initials = (firstName[0] + lastName[0]).toUpperCase();  // "ST"
+          } else if (firstName) {
+            initials = firstName.slice(0, 2).toUpperCase();
+          }
+        }
+      } catch (_) { }
+
+      if (!initials) initials = (user.email || "U").slice(0, 2).toUpperCase();
+
+      /* Apply to desktop + mobile avatars */
+      ["app-avatar", "mob-avatar"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = initials;
+      });
+    });
+
+    /* ── Firebase submit bridge ─────────────────────── */
+    window._firebaseSubmit = async function (data) {
+      return await submitApplication(data);
+    };
+
+    /* ── Firebase logout ─────────────────────────────── */
+    window._firebaseLogout = function () { _logout(); };
+  </script>
+
+  <!-- ══════════════════════════════════════════════════
+       Plain JS — resume upload, validation, form, hamburger
+       (completely unchanged from your original code)
+  ════════════════════════════════════════════════════ -->
+  <script>
+
+    function goBack() { window.location.href = "index.html"; }
+
+    /* ── Resume state ─────────────────────────────────── */
+    let resumeData = null;
+
+    const resumeDrop = document.getElementById("resumeDrop");
+    const resumeFile = document.getElementById("resumeFile");
+    const resumePreview = document.getElementById("resumePreview");
+    const resumeIcon = document.getElementById("resumeIcon");
+    const resumeName = document.getElementById("resumeName");
+    const resumeSize_el = document.getElementById("resumeSize");
+    const resumeViewBtn = document.getElementById("resumeViewBtn");
+    const resumeRemove = document.getElementById("resumeRemoveBtn");
+
+    function fileIcon(name) {
+      const ext = (name || "").split(".").pop().toLowerCase();
+      if (ext === "pdf") return "📕";
+      if (ext === "doc" || ext === "docx") return "📘";
+      return "📄";
+    }
+
+    function iconClass(name) {
+      const ext = (name || "").split(".").pop().toLowerCase();
+      if (ext === "pdf") return "pdf";
+      if (ext === "doc" || ext === "docx") return "docx";
+      return "other";
+    }
+
+    function fmtSize(bytes) {
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+    }
+
+    function handleFile(file) {
+      if (!file) return;
+      const MAX = 5 * 1024 * 1024;
+      if (file.size > MAX) { showToast("⚠️ File too large. Maximum size is 5 MB.", "error"); return; }
+      const allowed = [
+        "application/pdf", "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "text/plain"
+      ];
+      if (!allowed.includes(file.type) && !file.name.match(/\.(pdf|doc|docx|txt)$/i)) {
+        showToast("⚠️ Only PDF, DOC, DOCX or TXT files are allowed.", "error"); return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        resumeData = { name: file.name, size: file.size, type: file.type, base64: e.target.result };
+        showResumePreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function showResumePreview() {
+      if (!resumeData) return;
+      resumeDrop.style.display = "none";
+      resumePreview.style.display = "flex";
+      resumeIcon.textContent = fileIcon(resumeData.name);
+      resumeIcon.className = "resume-file-icon " + iconClass(resumeData.name);
+      resumeName.textContent = resumeData.name;
+      resumeSize_el.textContent = fmtSize(resumeData.size);
+      resumeViewBtn.href = resumeData.base64;
+    }
+
+    function clearResume() {
+      resumeData = null;
+      resumeFile.value = "";
+      resumePreview.style.display = "none";
+      resumeDrop.style.display = "block";
+      resumeViewBtn.href = "#";
+    }
+
+    resumeFile.addEventListener("change", () => handleFile(resumeFile.files[0]));
+    resumeDrop.addEventListener("dragover", e => { e.preventDefault(); resumeDrop.classList.add("drag-over"); });
+    resumeDrop.addEventListener("dragleave", () => resumeDrop.classList.remove("drag-over"));
+    resumeDrop.addEventListener("drop", e => {
+      e.preventDefault();
+      resumeDrop.classList.remove("drag-over");
+      handleFile(e.dataTransfer.files[0]);
+    });
+    resumeRemove.addEventListener("click", clearResume);
+
+    /* ── Toast ────────────────────────────────────────── */
+    function showToast(msg, type) {
+      const toast = document.getElementById("toast");
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.style.background = type === "success" ? "#2d7d46"
+        : type === "info" ? "#2563eb"
+          : "#c0392b";
+      toast.style.display = "block";
+      toast.style.opacity = "1";
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.style.display = "none", 400);
+      }, 3500);
+    }
+
+    /* ── Validation ───────────────────────────────────── */
+    const REQUIRED = [
+      { id: "companyName", label: "Company Name" },
+      { id: "position", label: "Position" },
+      { id: "status", label: "Status" },
+      { id: "jobType", label: "Job Type" },
+      { id: "appDate", label: "Application Date" },
+    ];
+
+    const ALL_FIELDS = [
+      "companyName", "position", "status", "jobType",
+      "location", "salary", "appDate", "deadline",
+      "interviewDate", "jobDescription", "notes",
+      "contactPerson", "contactEmail", "jobUrl"
+    ];
+
+    function highlightFields(emptyIds) {
+      ALL_FIELDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.border = "";
+      });
+      emptyIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.style.border = "2px solid #e74c3c"; el.style.borderRadius = "6px"; }
+      });
+    }
+
+    /* ── Submit button ────────────────────────────────── */
+    document.getElementById("addApplicationBtn").addEventListener("click", async function () {
+
+      /* 1. Validate */
+      const empty = REQUIRED.filter(f => !document.getElementById(f.id).value.trim());
+      if (empty.length > 0) {
+        highlightFields(empty.map(f => f.id));
+        showToast("⚠️ Please fill in: " + empty.map(f => f.label).join(", "), "error");
+        document.getElementById(empty[0].id).scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+
+      /* 2. Collect all form fields */
+      const formData = {};
+      ALL_FIELDS.forEach(id => {
+        formData[id] = document.getElementById(id).value.trim();
+      });
+
+      /* 3. Map form fields → Firestore schema */
+      const firestoreData = {
+        company: formData.companyName,
+        jobTitle: formData.position,
+        jobType: formData.jobType || "Full-Time",
+        location: formData.location || "",
+        deadline: formData.deadline || null,
+        salary: formData.salary,
+        appDate: formData.appDate,
+        interviewDate: formData.interviewDate || null,
+        jobDescription: formData.jobDescription,
+        notes: formData.notes,
+        contactPerson: formData.contactPerson,
+        contactEmail: formData.contactEmail,
+        jobUrl: formData.jobUrl,
+        resumeName: resumeData ? resumeData.name : null,
+        resumeSize: resumeData ? resumeData.size : null,
+        resumeType: resumeData ? resumeData.type : null,
+      };
+
+      /* 4. Disable button to prevent double submit */
+      const btn = document.getElementById("addApplicationBtn");
+      btn.disabled = true;
+      btn.textContent = "Saving…";
+      showToast("⏳ Submitting to Firebase…", "info");
+
+      try {
+        /* 5. Call Firebase submitApplication() via module bridge */
+        if (typeof window._firebaseSubmit !== "function") {
+          throw new Error("Firebase not ready. Please refresh and try again.");
+        }
+        const appId = await window._firebaseSubmit(firestoreData);
+        console.log("Saved to Firestore with ID:", appId);
+
+        /* 6. Success feedback */
+        highlightFields([]);
+        showToast("✅ Application submitted! HR will review it shortly.", "success");
+
+        /* 7. Reset form */
+        ALL_FIELDS.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+        clearResume();
+
+        /* 8. Redirect to dashboard after 2s */
+        setTimeout(() => { window.location.href = "index.html"; }, 2000);
+
+      } catch (e) {
+        showToast("❌ " + e.message, "error");
+        btn.disabled = false;
+        btn.textContent = "Add Application";
+      }
+    });
+
+    /* ── Hamburger ────────────────────────────────────── */
+    const hb = document.getElementById('hamburger');
+    const mn = document.getElementById('mobileNav');
+
+    if (hb && mn) {
+      hb.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hb.classList.toggle('open');
+        mn.classList.toggle('open');
+      });
+
+      document.addEventListener('click', e => {
+        if (!hb.contains(e.target) && !mn.contains(e.target)) {
+          hb.classList.remove('open');
+          mn.classList.remove('open');
+        }
+      });
+
+      /* Close drawer when any link/button inside it is clicked */
+      mn.querySelectorAll('a, button').forEach(el => {
+        el.addEventListener('click', () => {
+          hb.classList.remove('open');
+          mn.classList.remove('open');
+        });
+      });
+    }
+
+    /* ── Logout ──────────────────────────────────────── */
+    function logout() {
+      if (typeof window._firebaseLogout === "function") {
+        window._firebaseLogout();
+      } else {
+        window.location.href = "login.html";
+      }
+    }
+
+  </script>
+
+</body>
+
+</html>

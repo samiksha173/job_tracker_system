@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HR Dashboard — Job Tracker</title>
+    <link rel="stylesheet" href="hr-dashboard.css" />
+    <style>
+        /* ══════════════════════════════════════════════
+           NAVBAR — identical structure to applicant dashboard
+           ══════════════════════════════════════════════ */
+        .navbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            background: #fff;
+            border-bottom: 1px solid #f1f5f9;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-right: 4px;
+            flex-shrink: 0;
+            text-decoration: none;
+        }
+
+        /* Desktop nav tab buttons */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .navbtn {
+            padding: 7px 16px;
+            border-radius: 8px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            font-family: inherit;
+        }
+
+        .navbtn:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .navbtn.on-green {
+            background: #f0fdf4;
+            color: #16a34a;
+            font-weight: 600;
+        }
+
+        /* Right section */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        /* Avatar circle */
+        .nav-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+            user-select: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            cursor: default;
+        }
+
+        .nav-avatar.green {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+
+        /* Sign out button */
+        .btn-signout {
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: 1.5px solid #e2e8f0;
+            background: #fff;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-signout:hover {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fca5a5;
+        }
+
+        /* Hamburger button */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: #64748b;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        /* Hamburger open animation */
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* Mobile nav drawer */
+        .mobile-nav {
+            position: fixed;
+            top: 61px;
+            left: -100%;
+            width: 100%;
+            background: #fff;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-top: 1px solid #f1f5f9;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            transition: left 0.3s ease;
+            z-index: 99;
+        }
+
+        .mobile-nav.open {
+            left: 0;
+        }
+
+        .mobile-nav .mob-navbtn {
+            padding: 11px 14px;
+            border-radius: 8px;
+            border: none;
+            background: none;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: left;
+            color: #374151;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s;
+        }
+
+        .mobile-nav .mob-navbtn:hover {
+            background: #f1f5f9;
+        }
+
+        .mobile-nav .mob-navbtn.on-green {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .mobile-nav .mob-signout {
+            padding: 11px 16px;
+            border-radius: 8px;
+            border: 1.5px solid #fca5a5;
+            background: #fef2f2;
+            color: #dc2626;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .mobile-nav .nav-avatar {
+            width: 36px;
+            height: 36px;
+            font-size: 13px;
+        }
+
+        /* Responsive: show hamburger, hide desktop links */
+        @media (max-width: 1024px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .btn-signout {
+                display: none;
+            }
+        }
+
+
+        /* ══════════════════════════════════════════════
+           TOAST
+           ══════════════════════════════════════════════ */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s;
+            z-index: 9999;
+            max-width: 420px;
+            color: #fff;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #16a34a;
+        }
+
+        .toast.error {
+            background: #dc2626;
+        }
+
+        .toast.info {
+            background: #2563eb;
+        }
+
+
+        /* ══════════════════════════════════════════════
+           STAT CARDS
+           ══════════════════════════════════════════════ */
+        .stats-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 900px) {
+            .stats-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .stats-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .scard {
+            background: #fff;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 22px 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .scard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .scard-lbl {
+            font-size: 11px;
+            font-weight: 700;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 10px;
+        }
+
+        .scard-val {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #16a34a;
+            line-height: 1;
+        }
+
+
+        /* ══════════════════════════════════════════════
+           CANDIDATE CARDS
+           ══════════════════════════════════════════════ */
+        .cand-card {
+            background: #fff;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .cand-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border-color: #d1fae5;
+        }
+
+        .cand-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .cand-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cand-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+
+        .cand-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: #111;
+        }
+
+        .cand-email {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .cand-badge {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-applied {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-interview {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-selected {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .cand-job {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #374151;
+        }
+
+        .cand-meta {
+            margin-left: 8px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .cand-dates {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .cand-prev-msg {
+            font-size: 13px;
+            color: #2563eb;
+            background: #eff6ff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        /* Resume row */
+        .cand-resume {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .resume-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .resume-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .resume-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .resume-size {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .btn-view-resume {
+            padding: 5px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1.5px solid #3b82f6;
+            color: #3b82f6;
+            background: #eff6ff;
+            white-space: nowrap;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .btn-view-resume:hover {
+            background: #dbeafe;
+        }
+
+
+        /* ══════════════════════════════════════════════
+           HR ACTION PANEL
+           ══════════════════════════════════════════════ */
+        .cand-action {
+            border-top: 1px solid #f0f0f0;
+            padding-top: 14px;
+            margin-top: 12px;
+        }
+
+        .cand-action-row {
+            margin-bottom: 12px;
+        }
+
+        .cand-action-row label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+
+        .cand-select,
+        .cand-input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .cand-select:focus,
+        .cand-input:focus {
+            outline: none;
+            border-color: #16a34a;
+        }
+
+        .cand-textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            min-height: 80px;
+            resize: vertical;
+            box-sizing: border-box;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .cand-textarea:focus {
+            outline: none;
+            border-color: #16a34a;
+        }
+
+        .cand-save-btn {
+            padding: 11px 24px;
+            background: #16a34a;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        .cand-save-btn:hover {
+            background: #15803d;
+        }
+
+        .cand-save-btn:active {
+            transform: scale(0.97);
+        }
+
+        .cand-list {
+            margin-top: 12px;
+        }
+
+        .empty-state {
+            color: #9ca3af;
+            text-align: center;
+            padding: 40px;
+            font-size: 15px;
+        }
+
+
+        /* ══════════════════════════════════════════════
+           FILTER BAR
+           ══════════════════════════════════════════════ */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 180px;
+            padding: 9px 14px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #16a34a;
+        }
+
+        .filt {
+            padding: 7px 18px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 20px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .filt:hover {
+            border-color: #16a34a;
+            color: #16a34a;
+        }
+
+        .filt.active {
+            background: #16a34a;
+            color: #fff;
+            border-color: #16a34a;
+        }
+
+
+        /* ══════════════════════════════════════════════
+           SECTION / PAGE LAYOUT
+           ══════════════════════════════════════════════ */
+        .inner {
+            display: none;
+        }
+
+        .inner.active {
+            display: block;
+        }
+
+        .dash-body,
+        .page-body {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+
+        .dash-h1,
+        .page-h1 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0 0 6px;
+        }
+
+        .dash-sub,
+        .page-sub {
+            font-size: 14px;
+            color: #94a3b8;
+            margin: 0 0 28px;
+        }
+
+        .sec-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .sec-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .btn-viewall {
+            background: none;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #16a34a;
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .btn-viewall:hover {
+            background: #f0fdf4;
+            border-color: #16a34a;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ══════════════════════════════════════════
+         NAVBAR — same structure as applicant dashboard
+    ══════════════════════════════════════════ -->
+    <div class="navbar">
+        <div class="logo">💼 Job Tracker</div>
+
+        <!-- Desktop tabs -->
+        <div class="nav-links">
+            <button class="navbtn on-green" id="tab-btn-overview" onclick="hrTab('overview', this)">Overview</button>
+            <button class="navbtn" id="tab-btn-candidates" onclick="hrTab('candidates', this)">All Candidates</button>
+            <button class="navbtn" id="tab-btn-selected" onclick="hrTab('selected', this)">Selected</button>
+            <button class="navbtn" id="tab-btn-rejected" onclick="hrTab('rejected', this)">Rejected</button>
+        </div>
+
+        <!-- Right: hamburger + avatar + signout -->
+        <button class="hamburger" id="hamburger">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="nav-right">
+            <div class="nav-avatar green" id="hr-initials">HR</div>
+            <button class="btn-signout" onclick="logout()">Sign out</button>
+        </div>
+    </div>
+
+    <!-- Mobile Drawer — same style as applicant dashboard -->
+    <div class="mobile-nav" id="mobileNav">
+        <button class="mob-navbtn on-green" id="mob-tab-overview"
+            onclick="hrTab('overview', null); closeMobileNav()">Overview</button>
+        <button class="mob-navbtn" id="mob-tab-candidates" onclick="hrTab('candidates', null); closeMobileNav()">All
+            Candidates</button>
+        <button class="mob-navbtn" id="mob-tab-selected"
+            onclick="hrTab('selected', null); closeMobileNav()">Selected</button>
+        <button class="mob-navbtn" id="mob-tab-rejected"
+            onclick="hrTab('rejected', null); closeMobileNav()">Rejected</button>
+        <div class="nav-avatar green" id="hr-initials-mob">HR</div>
+        <button class="mob-signout btn-signout" onclick="logout()">Sign out</button>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════
+         OVERVIEW TAB
+    ══════════════════════════════════════════ -->
+    <div id="hr-tab-overview" class="inner active">
+        <div class="dash-body">
+            <h1 class="dash-h1">HR Dashboard</h1>
+            <p class="dash-sub">Manage all candidates and hiring decisions from one place.</p>
+
+            <div class="stats-4">
+                <div class="scard">
+                    <div class="scard-lbl">TOTAL APPLICATIONS</div>
+                    <div class="scard-val" id="hr-stat-total">0</div>
+                </div>
+                <div class="scard">
+                    <div class="scard-lbl">PENDING REVIEW</div>
+                    <div class="scard-val" id="hr-stat-pending">0</div>
+                </div>
+                <div class="scard">
+                    <div class="scard-lbl">SELECTED</div>
+                    <div class="scard-val" id="hr-stat-selected">0</div>
+                </div>
+                <div class="scard">
+                    <div class="scard-lbl">REJECTED</div>
+                    <div class="scard-val" id="hr-stat-rejected">0</div>
+                </div>
+            </div>
+
+            <div class="sec-row">
+                <span class="sec-title">Recent Applicants</span>
+                <button class="btn-viewall" onclick="hrTab('candidates', null)">View All →</button>
+            </div>
+
+            <div id="hr-ov-empty" class="empty-state">No applications received yet.</div>
+            <div id="applicants-list" class="cand-list"></div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════
+         ALL CANDIDATES TAB
+    ══════════════════════════════════════════ -->
+    <div id="hr-tab-candidates" class="inner">
+        <div class="page-body">
+            <h1 class="page-h1">All Candidates</h1>
+            <p class="page-sub">Filter, search, and manage every application.</p>
+
+            <div class="filter-bar">
+                <input class="search-box" id="hr-search" type="text"
+                    placeholder="Search by name, email, company or role…" oninput="renderHRCandidates()" />
+                <button id="hr-nav-all" class="filt active" onclick="setFilter('all',this)">All</button>
+                <button id="hr-nav-applied" class="filt" onclick="setFilter('applied',this)">Applied</button>
+                <button id="hr-nav-interview" class="filt" onclick="setFilter('interview',this)">Interview</button>
+                <button id="hr-nav-selected" class="filt" onclick="setFilter('selected',this)">Selected</button>
+                <button id="hr-nav-rejected" class="filt" onclick="setFilter('rejected',this)">Rejected</button>
+            </div>
+
+            <div id="hr-cand-empty" class="empty-state" style="display:none;">No candidates found.</div>
+            <div id="hr-cand-list" class="cand-list"></div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════
+         SELECTED TAB
+    ══════════════════════════════════════════ -->
+    <div id="hr-tab-selected" class="inner">
+        <div class="page-body">
+            <h1 class="page-h1">Selected Candidates</h1>
+            <p class="page-sub">Candidates you have selected for the role.</p>
+            <div id="hr-sel-empty" class="empty-state">No candidates selected yet.</div>
+            <div id="hr-sel-list" class="cand-list"></div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════
+         REJECTED TAB
+    ══════════════════════════════════════════ -->
+    <div id="hr-tab-rejected" class="inner">
+        <div class="page-body">
+            <h1 class="page-h1">Rejected Candidates</h1>
+            <p class="page-sub">Candidates who were not selected.</p>
+            <div id="hr-rej-empty" class="empty-state">No candidates rejected yet.</div>
+            <div id="hr-rej-list" class="cand-list"></div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════
+         HAMBURGER PLAIN SCRIPT
+         (runs immediately, no module needed)
+    ══════════════════════════════════════════ -->
+    <script>
+        function closeMobileNav() {
+            const hb = document.getElementById("hamburger");
+            const mn = document.getElementById("mobileNav");
+            if (hb) hb.classList.remove("open");
+            if (mn) mn.classList.remove("open");
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const hb = document.getElementById("hamburger");
+            const mn = document.getElementById("mobileNav");
+
+            if (hb && mn) {
+                /* Toggle on hamburger click */
+                hb.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    hb.classList.toggle("open");
+                    mn.classList.toggle("open");
+                });
+
+                /* Close when clicking outside */
+                document.addEventListener("click", function (e) {
+                    if (!hb.contains(e.target) && !mn.contains(e.target)) {
+                        hb.classList.remove("open");
+                        mn.classList.remove("open");
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Module script — hrdashboard.js handles all Firebase logic -->
+    <script type="module" src="hr-dashboard.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- BUG FIX 7: Mobile alignment for header -->
+    <style>
+        /* ── Mobile fix: keep brand/logo properly aligned ── */
+        @media (max-width: 600px) {
+            .auth-brand {
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 10px !important;
+                padding: 16px 16px 0 16px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .auth-wrap {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                padding: 0 !important;
+                min-height: 100vh !important;
+            }
+
+            .auth-card {
+                margin: 0 12px 24px 12px !important;
+                width: auto !important;
+            }
+
+            .roles-logo {
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
+                padding: 20px 20px 0 20px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 10px !important;
+            }
+
+            .roles-hero {
+                padding: 16px 20px !important;
+                text-align: left !important;
+            }
+
+            .roles-hero h1 {
+                font-size: 2rem !important;
+            }
+
+            .roles-grid {
+                flex-direction: column !important;
+                padding: 0 16px 24px !important;
+                gap: 16px !important;
+            }
+        }
+
+        /* ── Toggle button: make it clearly clickable & visible ── */
+        .toggle-pass {
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.6;
+            transition: opacity 0.2s ease, transform 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .toggle-pass:hover {
+            opacity: 1;
+            transform: scale(1.15);
+        }
+
+        .toggle-pass svg {
+            width: 18px;
+            height: 18px;
+            pointer-events: none;
+        }
+
+        /* ── Phone field: numbers only via input styling ── */
+        input[type="tel"] {
+            /* Visual hint that only numbers are expected */
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Inline field error styling ── */
+        .field-error {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 4px;
+            display: block;
+            font-family: 'DM Sans', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════════════════════════
+   TOAST NOTIFICATION
+  ══════════════════════════════ -->
+    <div id="toast" class="toast"></div>
+
+
+    <!-- ══════════════════════════════
+   PAGE 1 · ROLE SELECTION
+  ══════════════════════════════ -->
+    <div id="pg-roles" class="page active">
+        <div class="bg-blobs">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+        </div>
+        <div class="roles-logo">
+            <div class="roles-logo-box">💼</div>
+            <span class="roles-logo-name">Job Tracker</span>
+        </div>
+        <div class="roles-hero">
+            <div class="hero-tag">Your career, organized.</div>
+            <h1>Welcome Back</h1>
+            <p>Choose your role to get started</p>
+        </div>
+        <div class="roles-grid">
+            <div class="role-card applicant" onclick="goTo('pg-applicant')">
+                <div class="role-card-glow"></div>
+                <div class="role-card-emoji">🎯</div>
+                <h2>I'm an Applicant</h2>
+                <p>Track your applications, monitor interviews, and land your dream job.</p>
+                <button class="role-card-btn">Get Started →</button>
+            </div>
+            <div class="role-card hr" onclick="goTo('pg-hr')">
+                <div class="role-card-glow"></div>
+                <div class="role-card-emoji">🏢</div>
+                <h2>I'm an HR Manager</h2>
+                <p>Review candidates, manage pipelines, and make great hiring decisions.</p>
+                <button class="role-card-btn">Get Started →</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════
+   PAGE 2 · APPLICANT LOGIN / SIGNUP
+  ══════════════════════════════ -->
+    <div id="pg-applicant" class="page">
+        <div class="bg-blobs pink-blobs">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+        </div>
+        <div class="auth-wrap">
+            <div class="auth-brand">
+                <button class="btn-back" onclick="goTo('pg-roles')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M19 12H5M12 5l-7 7 7 7" />
+                    </svg>
+                </button>
+                <div class="auth-logo-box">💼</div>
+                <span class="auth-logo-name">Job Tracker</span>
+            </div>
+
+            <div class="auth-card">
+                <div class="auth-badge pink">
+                    <span class="badge-dot"></span> Applicant Portal
+                </div>
+
+                <!-- Tab switcher -->
+                <div class="auth-tabs">
+                    <button class="tab-btn active" id="a-tab-login" onclick="switchTab('applicant','login')">Sign
+                        In</button>
+                    <button class="tab-btn" id="a-tab-signup" onclick="switchTab('applicant','signup')">Sign
+                        Up</button>
+                    <div class="tab-indicator" id="a-tab-indicator"></div>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <div class="auth-form active" id="a-form-login">
+                    <h1>Welcome back</h1>
+                    <p class="sub">Sign in to your applicant dashboard</p>
+
+                    <div class="fgroup">
+                        <label>Email Address</label>
+                        <div class="input-wrap">
+                            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                            <input class="finput focus-pink" type="email" id="a-login-email" placeholder="you@email.com"
+                                oninput="clearFieldError('a-login-email')" />
+                        </div>
+                    </div>
+                    <div class="fgroup">
+                        <label>Password</label>
+                        <div class="input-wrap">
+                            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <input class="finput focus-pink" type="password" id="a-login-pass"
+                                placeholder="Enter your password" oninput="clearFieldError('a-login-pass')" />
+                            <button class="toggle-pass" type="button" onclick="togglePass('a-login-pass', this)"
+                                title="Show password">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="fgroup-row">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="a-remember" />
+                            <span class="checkmark pink"></span>
+                            Remember me
+                        </label>
+                        <a class="forgot pink" href="#" onclick="forgotPassword()">Forgot password?</a>
+                    </div>
+                    <button class="btn-login pink" onclick="loginApplicant()">Sign In →</button>
+                    <p class="switch-hint">Don't have an account? <a class="pink link"
+                            onclick="switchTab('applicant','signup')">Create one →</a></p>
+                </div>
+
+                <!-- SIGNUP FORM -->
+                <div class="auth-form" id="a-form-signup" style="display:none;">
+                    <h1>Create account</h1>
+                    <p class="sub">Join thousands of job seekers</p>
+
+                    <div class="form-row">
+                        <div class="fgroup">
+                            <label>First Name</label>
+                            <div class="input-wrap">
+                                <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                                <input class="finput focus-pink" type="text" id="a-signup-fname" placeholder="Alex"
+                                    oninput="clearFieldError('a-signup-fname')" />
+                            </div>
+                        </div>
+                        <div class="fgroup">
+                            <label>Last Name</label>
+                            <div class="input-wrap">
+                                <input class="finput focus-pink no-ico" type="text" id="a-signup-lname"
+                                    placeholder="Johnson" oninput="clearFieldError('a-signup-lname')" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fgroup">
+                        <label>Email Address</label>
+                        <div class="input-wrap">
+                            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                            <input class="finput focus-pink" type="email" id="a-signup-email"
+                                placeholder="you@email.com" oninput="clearFieldError('a-signup-email')" />
+                        </div>
+                    </div>
+                    <div class="fgroup">
+                        <!-- BUG FIX 4: Phone — numbers only, Indian format -->
+                        <label>Phone Number <span class="optional">(optional)</span></label>
+                        <div class="input-wrap">
+                            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                            </svg>
+                            <!-- type="tel" + inputmode="numeric" enforces numeric keyboard on mobile -->
+                            <input class="finput focus-pink" type="tel" id="a-signup-phone"
+                                placeholder="+91 98765 43210" inputmode="numeric" pattern="[+0-9\s\-]*" maxlength="14"
+                                oninput="this.value=this.value.replace(/[^+0-9\s\-]/g,''); clearFieldError('a-signup-phone')" />
+                        </div>
+                    </div>
+                    <div class="fgroup">
+                        <label>Password</label>
+                        <div class="input-wrap">
+                            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <input class="finput focus-pink" type="password" id="a-signup-pass"
+                                placeholder="Min. 8 characters"
+                                oninput="checkStrength('a-signup-pass', 'a-strength'); clearFieldError('a-signup-pass')" />
+                            <button class="toggle-pass" type="button" onclick="togglePass('a-signup-pass', this)"
+                                title="Show password">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="a-strength"></div>
+                        </div>
+                    </div>
+                    <div class="fgroup">
+                        <label>Confirm Password</label>
+                        <div class="input-wrap">
+                            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+                            </svg>
+                            <input class="finput focus-pink" type="password" id="a-signup-cpass"
+                                placeholder="Repeat password" oninput="clearFieldError('a-signup-cpass')" />
+                        </div>
+                    </div>
+                    <label class="checkbox-label terms">
+                        <input type="checkbox" id="a-terms" />
+                        <span class="checkmark pink"></span>
+                        I agree to the <a class="pink link" href="#">Terms of Service</a> and <a class="pink link"
+                            href="#">Privacy Policy</a>
+                    </label>
+                    <button class="btn-login pink" onclick="signupApplicant()">Create Account →</button>
+                    <p class="switch-hint">Already have an account? <a class="pink link"
+                            onclick="switchTab('applicant','login')">Sign in →</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════
+   PAGE 3 · HR LOGIN / SIGNUP
+  ══════════════════════════════ -->
+    <div id="pg-hr" class="page">
+        <div class="bg-blobs green-blobs">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+        </div>
+        <div class="auth-wrap">
+            <div class="auth-brand">
+                <button class="btn-back" onclick="goTo('pg-roles')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M19 12H5M12 5l-7 7 7 7" />
+                    </svg>
+                </button>
+                <div class="auth-logo-box">💼</div>
+                <span class="auth-logo-name">Job Tracker</span>
+            </div>
+
+            <div class="auth-card">
+                <div class="auth-badge green">
+                    <span class="badge-dot"></span> HR Manager Portal
+                </div>
+
+                <!-- Tab switcher -->
+                <div class="auth-tabs">
+                    <button class="tab-btn active" id="hr-tab-login" onclick="switchTab('hr','login')">Sign
+                        In</button>
+                    <button class="tab-btn " id="hr-tab-signup" onclick="switchTab('hr','signup')">Sign
+                        Up</button>
+                    <div class="tab-indicator" id="hr-tab-indicator"></div>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <div class="auth-form active" id="hr-form-login">
+                    <h1>Welcome back</h1>
+                    <p class="sub">Sign in to your HR dashboard</p>
+
+                    <div class="fgroup">
+                        <label>Work Email</label>
+                        <div class="input-wrap">
+                            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                            <input class="finput focus-green" type="email" id="hr-login-email"
+                                placeholder="hr@company.com" oninput="clearFieldError('hr-login-email')" />
+                        </div>
+                    </div>
+                    <div class="fgroup">
+                        <label>Password</label>
+                        <div class="input-wrap">
+                            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <input class="finput focus-green" type="password" id="hr-login-pass"
+                                placeholder="Enter your password" oninput="clearFieldError('hr-login-pass')" />
+                            <button class="toggle-pass" type="button" onclick="togglePass('hr-login-pass', this)"
+                                title="Show password">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="fgroup-row">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="hr-remember" />
+                            <span class="checkmark green"></span>
+                            Remember me
+                        </label>
+                        <a class="forgot pink" href="#" onclick="forgotPassword()">Forgot password?</a>
+                    </div>
+                    <button class="btn-login green" onclick="loginHR()">Sign In →</button>
+                    <p class="switch-hint">New HR member? <a class="green link"
+                            onclick="switchTab('hr','signup')">Register here →</a></p>
+                </div>
+
+                <!-- SIGNUP FORM -->
+                <div class="auth-form" id="hr-form-signup" style="display:none;">
+                    <h1>Create account</h1>
+                    <p class="sub">Register as an HR Manager</p>
+
+                    <div class="form-row">
+                        <div class="fgroup">
+                            <label>First Name</label>
+                            <div class="input-wrap">
+                                <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                                <input class="finput focus-green" type="text" id="hr-signup-fname" placeholder="Sarah"
+                                    oninput="clearFieldError('hr-signup-fname')" />
+                            </div>
+                        </div>
+                        <div class="fgroup">
+                            <label>Last Name</label>
+                            <div class="input-wrap">
+                                <input class="finput focus-green no-ico" type="text" id="hr-signup-lname"
+                                    placeholder="Mitchell" oninput="clearFieldError('hr-signup-lname')" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fgroup">
+                        <label>Work Email</label>
+                        <div class="input-wrap">
+                            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                            <input class="finput focus-green" type="email" id="hr-signup-email"
+                                placeholder="hr@company.com" oninput="clearFieldError('hr-signup-email')" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="fgroup">
+                            <label>Company Name</label>
+                            <div class="input-wrap">
+                                <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                    <polyline points="9,22 9,12 15,12 15,22" />
+                                </svg>
+                                <input class="finput focus-green" type="text" id="hr-signup-company"
+                                    placeholder="Acme Corp" oninput="clearFieldError('hr-signup-company')" />
+                            </div>
+                        </div>
+                        <div class="fgroup">
+                            <label>Employee ID</label>
+                            <div class="input-wrap">
+                                <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="7" width="20" height="14" rx="2" />
+                                    <path d="M16 3H8l-2 4h12z" />
+                                </svg>
+                                <input class="finput focus-green" type="text" id="hr-signup-empid"
+                                    placeholder="EMP-1042" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fgroup">
+                        <label>Department</label>
+                        <div class="input-wrap select-wrap">
+                            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                            <select class="finput focus-green fselect" id="hr-signup-dept">
+                                <option value="" disabled selected>Select department</option>
+                                <option>Human Resources</option>
+                                <option>Talent Acquisition</option>
+                                <option>Operations</option>
+                                <option>Finance</option>
+                                <option>Engineering</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="fgroup">
+                        <label>Password</label>
+                        <div class="input-wrap">
+                            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <input class="finput focus-green" type="password" id="hr-signup-pass"
+                                placeholder="Min. 8 characters"
+                                oninput="checkStrength('hr-signup-pass', 'hr-strength'); clearFieldError('hr-signup-pass')" />
+                            <button class="toggle-pass" type="button" onclick="togglePass('hr-signup-pass', this)"
+                                title="Show password">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="hr-strength"></div>
+                        </div>
+                    </div>
+                    <div class="fgroup">
+                        <label>Confirm Password</label>
+                        <div class="input-wrap">
+                            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+                            </svg>
+                            <input class="finput focus-green" type="password" id="hr-signup-cpass"
+                                placeholder="Repeat password" oninput="clearFieldError('hr-signup-cpass')" />
+                        </div>
+                    </div>
+                    <label class="checkbox-label terms">
+                        <input type="checkbox" id="hr-terms" />
+                        <span class="checkmark green"></span>
+                        I agree to the <a class="green link" href="#">Terms of Service</a> and <a class="green link"
+                            href="#">Privacy Policy</a>
+                    </label>
+                    <button class="btn-login green" onclick="signupHR()">Create Account →</button>
+                    <p class="switch-hint">Already registered? <a class="green link"
+                            onclick="switchTab('hr','login')">Sign in →</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module" src="script.js"></script>
+
+    <!-- BUG FIX 2: Forgot Password — uses window._resetPassword exposed by script.js -->
+    <script>
+        function forgotPassword() {
+            const email = prompt("Enter your registered email address:");
+            if (!email || email.trim() === "") {
+                alert("Please enter your email.");
+                return;
+            }
+
+            // Basic email check before calling
+            const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email.trim())) {
+                alert("❌ Please enter a valid email address (e.g. you@gmail.com).");
+                return;
+            }
+
+            // Wait for module to load if needed
+            const attempt = (retries) => {
+                if (window._resetPassword) {
+                    window._resetPassword(email.trim())
+                        .then(() => {
+                            alert("✅ Password reset link sent! Please check your inbox (and spam folder).");
+                        })
+                        .catch((error) => {
+                            alert("❌ " + error.message);
+                        });
+                } else if (retries > 0) {
+                    setTimeout(() => attempt(retries - 1), 300);
+                } else {
+                    alert("System not ready. Please refresh the page and try again.");
+                }
+            };
+            attempt(10);
+        }
+
+        // Expose clearFieldError globally for inline oninput handlers
+        window.clearFieldError = function (id) {
+            const input = document.getElementById(id);
+            if (!input) return;
+            input.style.borderColor = '';
+            const err = input.closest('.fgroup')?.querySelector('.field-error');
+            if (err) err.remove();
+        };
+    </script>
+
+</body>
+
+</html>

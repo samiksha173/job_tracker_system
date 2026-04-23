@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Tracker - Reminders</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- ✅ NAVBAR (TOP) -->
+    <div class="navbar">
+        <div class="logo">💼 Job Tracker</div>
+        <button class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="application.html">Applications</a>
+            <a href="calendar.html">Calendar</a>
+            <a class="active" href="reminders.html">Reminders</a>
+            <a href="job.html">Find Jobs</a>
+            <a href="tools.html">Tools</a>
+        </div>
+
+        <button class="btn" onclick="window.location.href='application.html'">
+            + New Application
+        </button>
+        <div class="nav-avatar pink" id="app-avatar">AB</div>
+        <button class="btn-signout" onclick="logout()">Sign out</button>
+    </div>
+
+
+    <!-- Mobile Menu -->
+    <div class="mobile-nav" id="mobileNav">
+        <a href="index.html">Dashboard</a>
+        <a href="application.html">Applications</a>
+        <a href="calendar.html">Calendar</a>
+        <a class="active" href="reminders.html">Reminders</a>
+        <a href="job.html">Find Jobs</a>
+        <a href="tools.html">Tools</a>
+        <button class="mob-new-btn" onclick="window.location.href='application.html'">
+            + New Application
+        </button>
+        <div class="nav-avatar pink" id="app-avatar">AB</div>
+        <button class="btn-signout" onclick="logout()">Sign out</button>
+    </div>
+
+    </div>
+
+    <!-- ✅ MAIN CONTENT -->
+    <main class="container">
+
+        <div class="content-header">
+            <h2>Reminders</h2>
+            <p>Stay on top of important deadlines and interviews</p>
+        </div>
+
+        <!-- Cards -->
+        <div id="reminderList" class="empty-state"></div>
+
+        <div class="reminder-cards">
+            <div class="stat-card urgent">
+                <div class="stat-info">
+                    <span>Urgent (0-2 days)</span>
+                    <h2 id="urgentCount">0</h2>
+                </div>
+                <div class="stat-icon red-bg">🔔</div>
+            </div>
+
+            <div class="stat-card this-week">
+                <div class="stat-info">
+                    <span>This Week (3-7 days)</span>
+                    <h2 id="weekCount">0</h2>
+                </div>
+                <div class="stat-icon yellow-bg">📅</div>
+            </div>
+
+            <div class="stat-card upcoming">
+                <div class="stat-info">
+                    <span>Upcoming (7+ days)</span>
+                    <h2 id="upcomingCount">0</h2>
+                </div>
+                <div class="stat-icon blue-bg">🕒</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+
+        <!-- List -->
+        <div class="reminder-list-container">
+            <h3>All Reminders</h3>
+            <p class="muted">All upcoming deadlines and interviews</p>
+
+            <div class="empty-state">
+                <div class="check-icon">✔️</div>
+                <p>No upcoming reminders. Great job staying on top of things!</p>
+            </div>
+        </div>
+
+    </main>
+
+
+
+
+
+    <script src="reminders.js">  </script>
+
+    <script type="module" src="shared-auth.js"> </script>
+    <script src="hamburger-fix.js" defer></script>
+
+
+</body>
+
+</html>

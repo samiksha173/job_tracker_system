@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Tracker - Calendar</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="logo">💼 Job Tracker</div>
+    <button class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links">
+      <a href="index.html">Dashboard</a>
+      <a href="application.html">Applications</a>
+      <a class="active" href="calendar.html">Calendar</a>
+      <a href="reminders.html">Reminders</a>
+      <a href="job.html">Find Jobs</a>
+      <a href="tools.html">Tools</a>
+    </div>
+    <button class="btn" onclick="window.location.href='application.html'">+ New Application</button>
+    <div class="nav-avatar pink" id="app-avatar">AB</div>
+    <button class="btn-signout" onclick="logout()">Sign out</button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Dashboard</a>
+    <a href="application.html">Applications</a>
+    <a class="active" href="calendar.html">Calendar</a>
+    <a href="reminders.html">Reminders</a>
+    <a href="job.html">Find Jobs</a>
+    <a href="tools.html">Tools</a>
+    <button class="mob-new-btn" onclick="window.location.href='application.html'">
+      + New Application
+    </button>
+    <div class="nav-avatar pink" id="app-avatar">AB</div>
+    <button class="btn-signout" onclick="logout()">Sign out</button>
+  </div>
+
+  </div>
+
+
+
+  <!-- MAIN -->
+  <main class="container">
+    <div class="content-header">
+      <h2>📅 Calendar</h2>
+      <p>Track interviews, deadlines, and important dates</p>
+    </div>
+
+    <div class="calendar-layout">
+
+      <!-- LEFT: CALENDAR -->
+      <div>
+        <div class="calendar-main">
+          <div class="calendar-controls">
+            <h3 id="monthDisplay"></h3>
+            <div class="btn-group">
+              <button id="prevBtn">← Previous</button>
+              <button id="todayBtn">Today</button>
+              <button id="nextBtn">Next →</button>
+            </div>
+          </div>
+
+          <div class="calendar-grid">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+          </div>
+
+          <div class="days-container" id="daysContainer"></div>
+
+          <div class="legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--today)"></div> Today
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--interview)"></div> Interview
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--deadline)"></div> Deadline
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--reminder)"></div> Reminder
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--offer)"></div> Offer
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: SIDEBAR -->
+      <div class="calendar-sidebar">
+
+        <!-- Selected Date Events -->
+        <div class="sidebar-card">
+          <h3 id="selectedDateTitle">Select a Date</h3>
+          <p class="event-count-text" id="eventCount">Click any date to see events</p>
+          <div id="eventList">
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              <p>No events on this date</p>
+            </div>
+          </div>
+          <button class="add-event-btn" id="addEventBtn" style="margin-top:12px" onclick="openModal()">＋ Add Event /
+            Reminder</button>
+        </div>
+
+        <!-- ALL REMINDERS -->
+        <div class="reminders-card">
+          <div class="reminders-header">
+            <h3>🔔 All Reminders</h3>
+            <span class="reminder-count" id="reminderCount">0</span>
+          </div>
+          <div class="reminders-list" id="remindersList">
+            <div class="empty-state">
+              <div class="empty-icon">🔕</div>
+              <p style="font-size:0.8rem">No reminders saved</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ADD EVENT MODAL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3>➕ Add Event / Reminder</h3>
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" id="eventTitle" placeholder="e.g. Google Interview, Apply deadline...">
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="eventDate">
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select id="eventType">
+          <option value="interview">🟢 Interview</option>
+          <option value="deadline">🔴 Deadline</option>
+          <option value="reminder">🟣 Reminder</option>
+          <option value="offer">🔵 Offer</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Time (optional)</label>
+        <input type="time" id="eventTime">
+      </div>
+      <div class="form-group">
+        <label>Note (optional)</label>
+        <textarea id="eventNote" rows="2" placeholder="Additional details..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-save" onclick="saveEvent()">Save Event</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── DATA ──────────────────────────────────────────────────────────────────
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let currentYear = today.getFullYear();
+    let currentMonth = today.getMonth();
+    let selectedDate = null;
+
+    const STORAGE_KEY = 'jobTrackerEvents';
+
+    function loadEvents() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+      catch { return []; }
+    }
+    function saveEvents(events) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+    }
+
+    // Seed some sample events if empty
+    let events = loadEvents();
+    if (events.length === 0) {
+      const fmt = (d) => d.toISOString().split('T')[0];
+      const addDays = (n) => { const d = new Date(today); d.setDate(d.getDate() + n); return d; };
+      events = [
+        { id: 1, title: 'Google Phone Screen', date: fmt(addDays(2)), type: 'interview', time: '10:00', note: 'Prepare LeetCode medium problems' },
+        { id: 2, title: 'Amazon SDE Application', date: fmt(addDays(5)), type: 'deadline', time: '', note: 'Submit resume and cover letter' },
+        { id: 3, title: 'Follow up - Meta', date: fmt(addDays(1)), type: 'reminder', time: '09:00', note: 'Email recruiter' },
+        { id: 4, title: 'Microsoft Offer Deadline', date: fmt(addDays(8)), type: 'offer', time: '', note: 'Negotiate salary' },
+        { id: 5, title: 'Daily job search check', date: fmt(today), type: 'reminder', time: '08:00', note: 'Apply to 3 jobs today' },
+      ];
+      saveEvents(events);
+    }
+
+    // ── CALENDAR RENDER ───────────────────────────────────────────────────────
+    const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'];
+
+    function getEventsForDate(dateStr) {
+      return events.filter(e => e.date === dateStr);
+    }
+
+    function formatDateStr(y, m, d) {
+      return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    }
+
+    const typeIcon = { interview: '🟢', deadline: '🔴', reminder: '🔔', offer: '🔵' };
+    const typeLabel = { interview: 'Interview', deadline: 'Deadline', reminder: 'Reminder', offer: 'Offer' };
+
+    function renderCalendar() {
+      document.getElementById('monthDisplay').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
+
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+      const container = document.getElementById('daysContainer');
+      container.innerHTML = '';
+
+      const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+
+      for (let i = 0; i < totalCells; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'day-cell';
+
+        let dayNum, year, month, isCurrentMonth = true;
+
+        if (i < firstDay) {
+          // prev month
+          dayNum = daysInPrevMonth - firstDay + i + 1;
+          month = currentMonth - 1;
+          year = currentYear;
+          if (month < 0) { month = 11; year--; }
+          isCurrentMonth = false;
+          cell.classList.add('other-month');
+        } else if (i >= firstDay + daysInMonth) {
+          // next month
+          dayNum = i - firstDay - daysInMonth + 1;
+          month = currentMonth + 1;
+          year = currentYear;
+          if (month > 11) { month = 0; year++; }
+          isCurrentMonth = false;
+          cell.classList.add('other-month');
+        } else {
+          dayNum = i - firstDay + 1;
+          month = currentMonth;
+          year = currentYear;
+        }
+
+        const dateStr = formatDateStr(year, month, dayNum);
+        const cellDate = new Date(year, month, dayNum);
+        const isToday = cellDate.getTime() === today.getTime();
+        const isSelected = selectedDate === dateStr;
+
+        if (isToday) cell.classList.add('today');
+        if (isSelected) cell.classList.add('selected');
+
+        const numEl = document.createElement('div');
+        numEl.className = 'day-number';
+        numEl.textContent = dayNum;
+        cell.appendChild(numEl);
+
+        // Event dots & mini labels
+        const dayEvents = getEventsForDate(dateStr);
+        if (dayEvents.length > 0) {
+          const dotsEl = document.createElement('div');
+          dotsEl.className = 'event-dots';
+
+          dayEvents.slice(0, 3).forEach(ev => {
+            if (isCurrentMonth) {
+              const mini = document.createElement('span');
+              mini.className = `mini-event ${ev.type}`;
+              mini.textContent = ev.title;
+              cell.appendChild(mini);
+            } else {
+              const dot = document.createElement('div');
+              dot.className = `dot ${ev.type}`;
+              dotsEl.appendChild(dot);
+            }
+          });
+          if (!isCurrentMonth) cell.appendChild(dotsEl);
+        }
+
+        cell.addEventListener('click', () => selectDate(dateStr));
+        container.appendChild(cell);
+      }
+
+      renderReminders();
+    }
+
+    // ── SELECT DATE ───────────────────────────────────────────────────────────
+    function selectDate(dateStr) {
+      selectedDate = dateStr;
+      renderCalendar();
+
+      const d = new Date(dateStr + 'T00:00:00');
+      const isToday = dateStr === formatDateStr(today.getFullYear(), today.getMonth(), today.getDate());
+      const label = isToday ? `Today — ${d.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' })}`
+        : d.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+      document.getElementById('selectedDateTitle').textContent = label;
+
+      const dayEvents = getEventsForDate(dateStr);
+      document.getElementById('eventCount').textContent = `${dayEvents.length} event(s) on this date`;
+
+      const listEl = document.getElementById('eventList');
+      if (dayEvents.length === 0) {
+        listEl.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>No events on this date</p></div>`;
+      } else {
+        listEl.innerHTML = `<div class="event-list">${dayEvents.map(ev => `
+          <div class="event-item">
+            <div class="event-icon ${ev.type}">${typeIcon[ev.type]}</div>
+            <div class="event-info">
+              <div class="event-title">${ev.title}</div>
+              <div class="event-subtitle">${ev.time ? '🕐 ' + ev.time : ''}${ev.note ? (ev.time ? ' · ' : '') + ev.note : ''}</div>
+            </div>
+            <span class="event-badge ${ev.type}">${typeLabel[ev.type]}</span>
+          </div>
+        `).join('')}</div>`;
+      }
+
+      // Pre-fill modal date
+      document.getElementById('eventDate').value = dateStr;
+    }
+
+    // ── REMINDERS PANEL ───────────────────────────────────────────────────────
+    function renderReminders() {
+      const todayStr = formatDateStr(today.getFullYear(), today.getMonth(), today.getDate());
+      const sorted = [...events].sort((a, b) => a.date.localeCompare(b.date));
+      const reminders = sorted; // show all events in reminders panel
+
+      document.getElementById('reminderCount').textContent = reminders.length;
+
+      const listEl = document.getElementById('remindersList');
+      if (reminders.length === 0) {
+        listEl.innerHTML = `<div class="empty-state"><div class="empty-icon">🔕</div><p style="font-size:0.8rem">No reminders saved</p></div>`;
+        return;
+      }
+
+      listEl.innerHTML = reminders.map(ev => {
+        const isPast = ev.date < todayStr;
+        const isToday = ev.date === todayStr;
+        const cls = isPast ? 'past' : isToday ? 'today-rem' : 'upcoming';
+        const statusCls = isPast ? 'past' : isToday ? 'today-s' : 'upcoming-s';
+        const statusLabel = isPast ? 'Past' : isToday ? 'Today' : 'Upcoming';
+        const d = new Date(ev.date + 'T00:00:00');
+        const dateLabel = d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+        return `
+          <div class="reminder-item ${cls}">
+            <span class="reminder-date-badge">${dateLabel}</span>
+            <span class="reminder-text">${typeIcon[ev.type]} ${ev.title}</span>
+            <span class="reminder-status ${statusCls}">${statusLabel}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ── MODAL ─────────────────────────────────────────────────────────────────
+    function openModal() {
+      if (!selectedDate) document.getElementById('eventDate').value = formatDateStr(today.getFullYear(), today.getMonth(), today.getDate());
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('open');
+      document.getElementById('eventTitle').value = '';
+      document.getElementById('eventTime').value = '';
+      document.getElementById('eventNote').value = '';
+    }
+    function saveEvent() {
+      const title = document.getElementById('eventTitle').value.trim();
+      const date = document.getElementById('eventDate').value;
+      const type = document.getElementById('eventType').value;
+      const time = document.getElementById('eventTime').value;
+      const note = document.getElementById('eventNote').value.trim();
+
+      if (!title || !date) { alert('Please fill in title and date.'); return; }
+
+      const newEvent = { id: Date.now(), title, date, type, time, note };
+      events.push(newEvent);
+      saveEvents(events);
+      closeModal();
+      renderCalendar();
+      if (selectedDate === date) selectDate(date);
+      else selectDate(date);
+    }
+
+    // ── CONTROLS ──────────────────────────────────────────────────────────────
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+      renderCalendar();
+    });
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+      renderCalendar();
+    });
+    document.getElementById('todayBtn').addEventListener('click', () => {
+      currentMonth = today.getMonth();
+      currentYear = today.getFullYear();
+      renderCalendar();
+      selectDate(formatDateStr(today.getFullYear(), today.getMonth(), today.getDate()));
+    });
+
+    // Close modal on overlay click
+    document.getElementById('modalOverlay').addEventListener('click', function (e) {
+      if (e.target === this) closeModal();
+    });
+
+    // ── INIT ──────────────────────────────────────────────────────────────────
+    renderCalendar();
+    // Auto-select today
+    selectDate(formatDateStr(today.getFullYear(), today.getMonth(), today.getDate()));
+
+
+    // ── Hamburger ─────────────────────────────────────
+    const hb = document.getElementById('hamburger');
+    const mn = document.getElementById('mobileNav');
+    hb?.addEventListener('click', () => {
+      hb.classList.toggle('open');
+      mn.classList.toggle('open');
+    });
+    document.addEventListener('click', e => {
+      if (hb && mn && !hb.contains(e.target) && !mn.contains(e.target)) {
+        hb.classList.remove('open');
+        mn.classList.remove('open');
+      }
+    });
+
+
+
+    /* ── Logout ──────────────────────────────────────────── */
+    function logout() { _logout(); }
+
+
+
+  </script>
+
+
+  <script type="module" src="shared-auth.js"></script>
+  <script src="hamburger-fix.js" defer></script>
+</body>
+
+</html>

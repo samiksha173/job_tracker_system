@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Job Tracker Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    @media screen and (max-width: 1024px) {
+      .container {
+        width: 100%;
+        padding: 0 16px;
+      }
+
+      .navbar {
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .btn {
+        width: 100%;
+        margin-top: 8px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .subtitle {
+        font-size: .9rem;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+      }
+
+      .card {
+        padding: 14px;
+        border-radius: 12px;
+      }
+
+      .card h3 {
+        font-size: 12px;
+      }
+
+      .card h2 {
+        font-size: 18px;
+      }
+
+      .card p {
+        font-size: 11px;
+      }
+
+      .recent-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .view-btn {
+        width: 100%;
+      }
+
+      #recentBox>div {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px;
+        width: 100%;
+      }
+
+      .mobile-nav {
+        position: fixed;
+        top: 60px;
+        left: -100%;
+        width: 100%;
+        background: #fff;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        transition: left .3s ease;
+        z-index: 999;
+      }
+
+      .mobile-nav.open {
+        left: 0;
+      }
+
+      .mobile-nav a {
+        padding: 10px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        color: #333;
+      }
+
+      .mobile-nav a:hover {
+        background: #f1f5f9;
+      }
+    }
+
+    @media screen and (max-width:480px) {
+      h1 {
+        font-size: 1.3rem;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .card h2 {
+        font-size: 16px;
+      }
+
+      .card h3 {
+        font-size: 11px;
+      }
+
+      .card p {
+        font-size: 10px;
+      }
+    }
+
+    /* Toast — controlled by index.js */
+    #toast {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+      z-index: 9999;
+      max-width: 420px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      transition: opacity 0.3s;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Toast (required by index.js) -->
+  <div id="toast"></div>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">💼 Job Tracker</div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <div class="nav-links">
+      <a class="active">Dashboard</a>
+      <a href="application.html">Applications</a>
+      <a href="calendar.html">Calendar</a>
+      <a href="reminders.html">Reminders</a>
+      <a href="job.html">Find Jobs</a>
+      <a href="tools.html">Tools</a>
+    </div>
+    <!-- onclick="openModal()" calls the function exposed by index.js -->
+    <button class="btn" onclick="openModal()">+ New Application</button>
+    <div class="nav-avatar pink" id="app-avatar">AB</div>
+    <button class="btn-signout" onclick="logout()">Sign out</button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-nav" id="mobileNav">
+    <a class="active" href="index.html">Dashboard</a>
+    <a href="application.html">Applications</a>
+    <a href="calendar.html">Calendar</a>
+    <a href="reminders.html">Reminders</a>
+    <a href="job.html">Find Jobs</a>
+    <a href="tools.html">Tools</a>
+    <button class="mob-new-btn" onclick="openModal()">+ New Application</button>
+    <div class="nav-avatar pink" id="app-avatar-mob">AB</div>
+    <button class="btn-signout" onclick="logout()">Sign out</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+
+    <h1>Dashboard</h1>
+    <p class="subtitle">Overview of your job applications and upcoming events</p>
+
+    <!--
+      HR update banners are injected here by index.js renderHRUpdates().
+      When HR selects/rejects/schedules — this div fills automatically.
+    -->
+    <div id="hr-banners"></div>
+
+    <!-- Stat Cards -->
+    <div class="cards">
+      <div class="card">
+        <h3>Total Applications</h3>
+        <h2 id="totalCount">0</h2>
+        <p>All applications tracked</p>
+      </div>
+      <div class="card">
+        <h3>Applied</h3>
+        <h2 id="appliedCount">0</h2>
+        <p>Awaiting response</p>
+      </div>
+      <div class="card">
+        <h3>Interview Scheduled</h3>
+        <h2 id="interviewCount">0</h2>
+        <p>Active interviews</p>
+      </div>
+      <div class="card">
+        <h3>Selected</h3>
+        <h2 id="offerCount">0</h2>
+        <p>Successful applications</p>
+      </div>
+      <div class="card">
+        <h3>Rejected</h3>
+        <h2 id="rejectedCount">0</h2>
+        <p>Keep applying!</p>
+      </div>
+      <div class="card">
+        <h3>Upcoming Deadlines</h3>
+        <h2 id="deadlineCount">0</h2>
+        <p>Within next days</p>
+      </div>
+      <div class="card">
+        <h3>Upcoming Interviews</h3>
+        <h2 id="upcomingInterviewCount">0</h2>
+        <p>Within next days</p>
+      </div>
+    </div>
+
+    <!-- Recent Applications -->
+    <div class="recent">
+      <div class="recent-header">
+        <h2>Recent Applications</h2>
+        <button class="view-btn" onclick="window.location.href='application.html'">View All</button>
+      </div>
+      <!--
+        recentBox is populated by index.js renderRecentList().
+        Each card shows: company, title, date, status badge (from HR),
+        HR message, interview date, and a delete button.
+      -->
+      <div class="recent-box" id="recentBox">
+        <p>Loading applications…</p>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+
+  <!--
+    Single module script — index.js handles everything:
+    auth, real-time listener, stats, recent list, HR banners,
+    modal, submit, delete, logout, hamburger
+  -->
+  <script type="module" src="index.js"></script>
+
+</body>
+
+</html>

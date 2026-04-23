@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Tracker - Developer Tools</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- MODAL OVERLAY -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box" id="modalBox">
+            <div class="modal-icon" id="modalIcon">⚠️</div>
+            <h3 class="modal-title" id="modalTitle">Title</h3>
+            <p class="modal-msg" id="modalMsg">Message</p>
+            <div class="modal-actions" id="modalActions"></div>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo">💼 Job Tracker</div>
+        <button class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="application.html">Applications</a>
+            <a href="calendar.html">Calendar</a>
+            <a href="reminders.html">Reminders</a>
+            <a href="job.html">Find Jobs</a>
+            <a class="active" href="tools.html">Tools</a>
+        </div>
+        <button class="btn" onclick="window.location.href='application.html'">
+            + New Application
+        </button>
+        <div class="nav-avatar pink" id="app-avatar">AB</div>
+        <button class="btn-signout" onclick="logout()">Sign out</button>
+    </div>
+    <!-- Mobile Menu -->
+    <div class="mobile-nav" id="mobileNav">
+        <a href="index.html">Dashboard</a>
+        <a href="application.html">Applications</a>
+        <a href="calendar.html">Calendar</a>
+        <a href="reminders.html">Reminders</a>
+        <a href="job.html">Find Jobs</a>
+        <a class="active" href="tools.html">Tools</a>
+        <button class="mob-new-btn" onclick="window.location.href='application.html'">
+            + New Application
+        </button>
+        <div class="nav-avatar pink" id="app-avatar">AB</div>
+        <button class="btn-signout" onclick="logout()">Sign out</button>
+    </div>
+
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+
+        <div class="content-header">
+            <h2>Developer Tools</h2>
+            <p>Manage your application data and settings</p>
+        </div>
+
+        <div class="tools-grid">
+
+            <!-- About -->
+            <div class="tool-card">
+                <div class="card-title text-blue">
+                    <span class="icon">ⓘ</span>
+                    <h3>About Data Storage</h3>
+                </div>
+                <p class="muted">
+                    All your application data is stored locally in your browser's localStorage.
+                    You currently have <strong id="appCountDisplay">0 applications</strong> saved.
+                </p>
+                <div class="storage-info">
+                    <span class="storage-label">💾 Storage Used:</span>
+                    <span class="storage-badge" id="storageSize">0.00 KB</span>
+                </div>
+            </div>
+
+            <!-- Demo -->
+            <div class="tool-card">
+                <div class="card-title">
+                    <span class="icon">🗄️</span>
+                    <h3>Demo Data</h3>
+                </div>
+                <p class="muted">Load sample applications to explore features</p>
+                <div class="warning-box">
+                    ℹ️ Demo apps will be <strong>merged</strong> with your existing data — nothing will be deleted.
+                </div>
+                <button class="btn-action" id="loadDemoBtn">
+                    💾 Load Demo Data
+                </button>
+            </div>
+
+            <!-- Export -->
+            <div class="tool-card">
+                <div class="card-title text-green">
+                    <span class="icon">📥</span>
+                    <h3>Export Data</h3>
+                </div>
+                <p class="muted">Download your applications as a JSON backup file.</p>
+                <button class="btn-action" id="exportBtn">
+                    ⭳ Export to JSON
+                </button>
+            </div>
+
+            <!-- Import -->
+            <div class="tool-card">
+                <div class="card-title text-blue">
+                    <span class="icon">📤</span>
+                    <h3>Import Data</h3>
+                </div>
+                <p class="muted">Restore applications from a previously exported JSON file.</p>
+                <input type="file" id="importFile" hidden>
+                <button class="btn-action" onclick="document.getElementById('importFile').click()">
+                    ⭱ Import JSON
+                </button>
+            </div>
+
+            <!-- Clear -->
+            <div class="tool-card danger-card">
+                <div class="card-title text-red">
+                    <span class="icon">🗑️</span>
+                    <h3>Clear All Data</h3>
+                </div>
+                <p class="muted">Permanently delete all saved applications. This cannot be undone.</p>
+                <button class="btn-danger" id="clearAllBtn">
+                    🗑️ Clear All Data
+                </button>
+            </div>
+
+            <!-- Recycle Bin -->
+            <div class="tool-card bin-card">
+                <div class="card-title text-orange">
+                    <span class="icon">♻️</span>
+                    <h3>Recycle Bin</h3>
+                </div>
+                <p class="muted">Deleted applications are stored here forever until you manually empty the bin.</p>
+
+                <div class="bin-stat-row">
+                    <div class="bin-stat">
+                        <span class="bin-stat-num" id="binCount">0</span>
+                        <span class="bin-stat-label">Items</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-num" id="binSizeDisplay">0 KB</span>
+                        <span class="bin-stat-label">Size</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-num">∞</span>
+                        <span class="bin-stat-label">Retention</span>
+                    </div>
+                </div>
+
+                <button class="btn-action btn-orange" id="openBinBtn">♻️ Open Recycle Bin</button>
+            </div>
+
+
+
+            <div class="tool-card dev-card">
+                <div class="card-title text-purple">
+                    <span class="icon">👨‍💻</span>
+                    <h3>Developer Info</h3>
+                </div>
+
+                <div class="dev-avatar" id="devAvatar">TS</div>
+
+                <div class="dev-details">
+                    <div class="dev-row">
+                        <span class="dev-icon">👤</span>
+                        <div>
+                            <span class="dev-label">Name</span>
+                            <span class="dev-value" id="devName">Tarte Samiksha</span>
+                        </div>
+                    </div>
+                    <div class="dev-row">
+                        <span class="dev-icon">✉️</span>
+                        <div>
+                            <span class="dev-label">Email</span>
+                            <a class="dev-value dev-link" id="devEmail"
+                                href="mailto:tartesamiksha@gmail.com">tartesamiksha@gmail.com</a>
+                        </div>
+                    </div>
+                    <div class="dev-row">
+                        <span class="dev-icon">📱</span>
+                        <div>
+                            <span class="dev-label">Mobile</span>
+                            <a class="dev-value dev-link" id="devPhone" href="tel:+918956323013">+91 89563 23013</a>
+                        </div>
+                    </div>
+                    <div class="dev-row">
+                        <span class="dev-icon">🌐</span>
+                        <div>
+                            <span class="dev-label">Version</span>
+                            <span class="dev-value" id="devVersion">v1.0.0</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <script src="tools.js"></script>
+    <script type="module" src="shared-auth.js"></script>
+    <script src="hamburger-fix.js" defer></script>
+</body>
+
+</html>
